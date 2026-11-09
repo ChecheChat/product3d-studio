@@ -1,0 +1,8 @@
+.env*
+.data
+samples
+.next
+node_modules
+scripts
+docs/aholo-openapi.json
+docs/*.mp4

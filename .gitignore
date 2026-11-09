@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local data
+/.data
+/samples
+
+# demo videos
+docs/*.mp4
+
+# 不进仓库：第三方接口文档、配乐成品（scripts/demo/music.py 可重新生成）
+docs/aholo-openapi.json
+scripts/demo/*.wav
+docs/参赛计划.md

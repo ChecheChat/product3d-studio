@@ -1,0 +1,34 @@
+// 镜头 3–4：首页上传 5 张照片 → 填信息 → 选高质量 → 生成 → 详情页显示生成中
+import { clip, clickEl, moveTo } from "./lib.mjs";
+import { writeFileSync } from "node:fs";
+const CODE = process.env.ACCESS_CODE;
+const S = "samples/cup/";
+await clip("c03-upload", async (page, { base, mark }) => {
+  await page.addInitScript((c) => localStorage.setItem("sample-room-access-code", c), CODE);
+  await page.goto(base);
+  await page.waitForTimeout(1500);
+  mark("home");
+  await page.mouse.move(700, 120, { steps: 5 });
+  await moveTo(page, page.getByText("点击或拖入商品图"));
+  await page.waitForTimeout(500);
+  await page.locator('input[type=file]').setInputFiles([S + "main.jpg", S + "view1-front34.png", S + "view2-opposite34.png", S + "view3-side.png", S + "view4-back.png"]);
+  await page.waitForTimeout(1500);
+  mark("files");
+  const name = page.getByPlaceholder("商品名称 *");
+  await clickEl(page, name);
+  await page.keyboard.type("手绘海浪陶瓷马克杯", { delay: 90 });
+  await clickEl(page, page.getByPlaceholder("品牌 / 店铺"));
+  await page.keyboard.type("示例品牌", { delay: 90 });
+  await clickEl(page, page.getByPlaceholder("到手价，如 ¥59 或 ฿199"));
+  await page.keyboard.type("¥59", { delay: 120 });
+  await clickEl(page, page.getByPlaceholder("卖点 / 尺寸 / 注意事项（会显示在分享页）"));
+  await page.keyboard.type("手绘海浪纹，哑光釉面", { delay: 90 });
+  await moveTo(page, page.locator("select[name=quality]"));
+  await page.waitForTimeout(600);
+  mark("filled");
+  await clickEl(page, page.getByRole("button", { name: /用 5 张图生成/ }));
+  await page.waitForURL(/\/room\//, { timeout: 120000 });
+  mark("room");
+  writeFileSync(process.env.DEMO_OUT + "/new-id.txt", page.url().split("/room/")[1]);
+  await page.waitForTimeout(6000);
+});
